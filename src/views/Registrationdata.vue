@@ -491,34 +491,54 @@ computed: {
   100% { transform: rotate(360deg); }
 }
 @media (max-width: 768px) {
+  /* Adjust font size and padding for better mobile readability */
+  .result-table th,
+  .result-table td {
+    padding: 5px;
+    font-size: 10px;
+  }
+  .pagination button {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  /* Adjust spacing and alignment for mobile screens */
   .content-container {
     margin: 0; /* Remove left margin on mobile screens */
   }
-
   .table-container {
     overflow-x: auto;
   }
 
-  .result-table th,
-  .result-table td {
-    padding: 6px; 
-    font-size: 12px; 
-  }
-  .pagination button {
-    padding: 3px 8px;
-  }
-}
-@media (max-width: 300px) {
-  .search-bar {
-    width: 100%; /* Expand search bar to full width on very narrow screens */
-  }
-  .content-container{
-    width: 100%;
-  }
-  .table-container{
-    width: 100%;
-    overflow-x: auto;
+  /* Center align the table header on mobile screens */
+  .result-table th {
+    text-align: center;
   }
   
+  /* Reduce padding on small screens */
+  .header {
+    padding: 10px;
+  }
+  .filter-bar {
+    padding: 10px;
+  }
+  
+  /* Expand search bar to full width on mobile */
+  .search-bar {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Adjust items per page buttons */
+  .items-per-page button {
+    padding: 3px 6px;
+  }
+
+  /* Adjust the loader size for small screens */
+  .loader {
+    width: 12px;
+    height: 12px;
+  }
 }
 </style>
