@@ -20,8 +20,7 @@
         <button @click="setItemsPerPage(20)">20</button>
         <!-- You can add more buttons for different options -->
       </div>
-      <div class="table-container">
-        <div class="filter-bar">
+      <div class="filter-bar">
       <label>Filter by Status:</label>
       <select v-model="selectedStatus">
         <option value="all">All</option>
@@ -30,15 +29,15 @@
         <option value="pending">Pending</option>
       </select>
     </div>
+      <div class="table-container">
+        
       <table class="result-table">
         <thead>
           <tr>
             <th> First-Name</th>
             <th>Last-Name</th>
             <th>Email</th>
-            
             <th>Education</th>
-
             <th>CNIC</th>
             
             <th>Age</th>
@@ -67,19 +66,19 @@
                 <td>{{ user.Gender }}</td> <!-- Update this line -->
                 <td>{{ user.address }}</td>
                 <td>{{ user.DOB }}</td> <!-- Update this line -->
-                <td class="cv-cell"><a @click="downloadCV(user.id)">
-                    <i class="fas fa-download"></i></a></td>
-                 <!-- Display the 'approved' field -->
-                
-                 
-                  <td>
-            <button
-              @click="approveUser(user.id)"
-              :class="{ approved: user.approved === 1 }">Approved
-            </button>
-            <button
-              @click="disapproveUser(user.id)"
-              :class="{ disapproved: user.approved === 0 }">Disapproved</button></td>
+                <td class="cv-cell"><a @click="downloadCV(user.id)" v-bind:class="{ 'cursor-pointer': !isDownloadingCV }">
+                    <i class="fas fa-download"></i></a>
+                    <div v-if="isDownloadingCV" class="loader"></div>
+                    </td>
+                    
+                    <td>
+  <button @click="showApproveModal(user.id)">
+    <i class="fas fa-check-circle" :class="{ approved: user.approved === 1 }"></i>
+  </button>
+  <button @click="showDisapprovedModal(user.id)">
+    <i class="fas fa-times-circle" :class="{ disapproved: user.approved === 0 }"></i>
+  </button>
+</td>
           <td>{{ getStatusText(user) }}</td>
             </tr>
       </tbody>
@@ -92,13 +91,22 @@
       <button @click="fetchPage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
     </div>
   </div>
+  <StatusChangeModal
+  :showModal="showStatusChangeModal"
+  @status-change-confirmed="handleStatusChangeConfirmed"
+/>
 </div>
+
 </template>
 
 <script>
-import axios from 'axios';
+  import StatusChangeModal from './StatusChangeModal.vue'; // Path to your StatusChangeModal component
+  import axios from 'axios';
 
 export default {
+  components: {
+    StatusChangeModal, // Register the StatusChangeModal component
+  },
   data() {
     return {
       registeredUsers: [],
@@ -108,6 +116,10 @@ export default {
       searchQuery: '',
       itemsPerPage: 10,
       selectedStatus: "all",
+      showStatusChangeModal: false,
+      userIdForStatusChange: null,
+      isDownloadingCV: false,   // To track if the CV is being downloaded
+      loadingDelay: 1000, 
     };
   },
   mounted() {
@@ -185,28 +197,74 @@ export default {
           console.error('Error disapproving user:', error);
         });
     },
-    downloadCV(userId) {
-      const requestData = { id: userId };
-      axios
-        .get(`http://192.168.11.213:3000/registration/download-cv?id=${userId}`,  {
-          responseType: 'blob',
-        })
-        .then(response => {
-          const blob = new Blob([response.data], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
+    showApproveModal(userId) {
+  this.userIdForStatusChange = userId;
+  this.showStatusChangeModal = true;
+  this.statusChangeType = 'Approved'; // Set the status change type to 'Approved'
+},
+showDisapprovedModal(userId) {
+  this.userIdForStatusChange = userId;
+  this.showStatusChangeModal = true;
+  this.statusChangeType = 'Disapproved'; // Set the status change type to 'Disapproved'
+},
+handleStatusChangeConfirmed(confirm) {
+  if (confirm) {
+    // Call your API to update status here
+    const userId = this.userIdForStatusChange;
+    const newStatus = this.getNewStatusForUserId(userId); // Determine the new status based on user input
+    // Update the latest status based on the confirmation
+    axios
+      .put('http://192.168.11.213:3000/registration/update-users', {
+        id: userId,
+        status: newStatus,
+      })
+      .then(response => {
+        console.log('Status updated:', response.data);
+        // Update the local data with the new status
+        const user = this.registeredUsers.find(user => user.id === userId);
+        if (user) {
+          user.latestStatus = newStatus;
+          user.approved = newStatus === 'Approved' ? 1 : newStatus === 'Disapproved' ? 0 : -1;
+        }
+      })
+      .catch(error => {
+        console.error('Error updating status:', error);
+      });
+  }
+  this.showStatusChangeModal = false; // Close the modal after handling the confirmation
+  this.statusChangeType = ''; // Reset the status change type
+},
+getNewStatusForUserId(userId) {
+  // Return the status change type set by showApproveModal or showDisapprovedModal
+  return this.statusChangeType;
+},
+downloadCV(userId) {
+  this.isDownloadingCV = true; // Show the loader and set the flag
+  const requestData = { id: userId };
+  axios
+    .get(`http://192.168.11.213:3000/registration/download-cv?id=${userId}`,  {
+      responseType: 'blob',
+    })
+    .then(response => {
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
 
-          const link = document.createElement('a');
-          link.href = url;
-          link.target = '_blank';
-          link.download = `CV_${userId}.pdf`;
-          link.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.download = `CV_${userId}.pdf`;
+      link.click();
 
-          URL.revokeObjectURL(url);
-        })
-        .catch(error => {
-          console.error('Error fetching user CV:', error);
-        });
-    },
+      URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Error fetching user CV:', error);
+    })
+    .finally(() => {
+      this.isDownloadingCV = false; // Hide the loader after the download is complete or failed
+    });
+},
+
     getStatusText(user) {
     if (user.approved === 1) {
       return 'Approved';
@@ -414,35 +472,91 @@ computed: {
   cursor: pointer;
   margin-left: 25px;
 }
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #2082eb;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 @media (max-width: 768px) {
-  .content-container {
-    margin: 0; /* Remove left margin on mobile screens */
+  table{
+    width: 100%;
+    margin-right: 0;
   }
-
-  .table-container {
-    overflow-x: auto;
+  th, 
+  td{
+    font-size: 2px !important;
+    padding: 2px;
+    margin: 0;
   }
-
+  /* Adjust font size and padding for better mobile readability */
   .result-table th,
   .result-table td {
-    padding: 6px; 
-    font-size: 12px; 
+    padding: 5px;
+    font-size: 10px;
+    max-width: 100px;
   }
   .pagination button {
-    padding: 3px 8px;
+    padding: 3px 6px;
+    font-size: 10px;
   }
-}
-@media (max-width: 300px) {
-  .search-bar {
-    width: 100%; /* Expand search bar to full width on very narrow screens */
+
+  /* Adjust spacing and alignment for mobile screens */
+  .content-container {
+    margin: 0; /* Remove left margin on mobile screens */
+    width:100%;
   }
-  .content-container{
-    width: 100%;
-  }
-  .table-container{
-    width: 100%;
+  .table-container {
     overflow-x: auto;
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Center align the table header on mobile screens */
+  .result-table th {
+    text-align: center;
   }
   
+  /* Reduce padding on small screens */
+  .header {
+    padding: 10px;
+  }
+  .filter-bar {
+    padding: 10px;
+  }
+  
+  /* Expand search bar to full width on mobile */
+  .search-bar {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Adjust items per page buttons */
+  .items-per-page button {
+    padding: 3px 6px;
+  }
+
+  /* Adjust the loader size for small screens */
+  .loader {
+    width: 12px;
+    height: 12px;
+  }
+  .result-page{
+    width: 100%;
+    padding: 6px;
+    margin: 0;
+  }
 }
 </style>

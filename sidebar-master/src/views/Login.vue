@@ -67,13 +67,15 @@ export default {
     },
 
     async signInSubmit() {
-      const userData = {
-        email: this.signInEmail,
-        password: this.signInPassword
-      };
-      await this.signInAction(userData);
-      // Handle post sign-in logic, maybe navigate to another page or display a message
-    }
+  const userData = {
+    email: this.signInEmail,
+    password: this.signInPassword,
+  };
+  await this.signInAction(userData);
+
+  // Assuming signInAction sets the user as authenticated
+  this.$router.push('/profile'); // Redirect to the profile page
+}
   }
 };
 </script>
@@ -90,12 +92,7 @@ export default {
 	overflow: hidden;
 	box-shadow: 0 15px 30px rgba(0, 0, 0, 2), 0 10px 10px rgba(0, 0, 0, 2);
 	background: linear-gradient(to bottom, #efefef, #ccc);
-	@media (max-width: 568px) {
-	  /* Adjust container styles for smaller screens */
-	  width: 100%;
-	  height: auto;
-	  margin-top: 30px;
-	}
+	
   }
   .overlay-container {
 	position: absolute;
@@ -107,13 +104,7 @@ export default {
 	overflow: hidden;
 	transition: transform 0.5s ease-in-out;
 	z-index: 100;
-	@media (max-width: 568px) {
-	  /* Adjust overlay-container styles for smaller screens */
-	  width: 100%;
-	  height: auto;
-	  left: 0;
-	  transform: none;
-	}
+	
   }
   
   .overlay {
@@ -125,11 +116,7 @@ export default {
 	color: #fff;
 	transform: translateX(0);
 	transition: transform 0.5s ease-in-out;
-	@media (max-width: 200px) {
-	  /* Adjust overlay styles for smaller screens */
-	  width: 100%;
-	  left: 0;
-	}
+	
   }
   
   /* Styles for the left and right overlays */
@@ -146,11 +133,7 @@ export default {
 	text-align: center;
 	transform: translateX($property);
 	transition: transform 0.5s ease-in-out;
-	@media (max-width: 200px) {
-	  /* Adjust overlay-left and overlay-right styles for smaller screens */
-	  width: 100%;
-	  margin: 0;
-	}
+	
   }
   .overlay-left {
 	@include overlays(-30%);
@@ -164,11 +147,7 @@ export default {
 	right: 0;
 	margin-top: 40px;
 	margin-left: 20px;
-	@media (max-width: 200px) {
-	  /* Adjust overlay-left and overlay-right styles for smaller screens */
-	  width: 100%;
-	  margin: 0;
-	}
+	
   }
   h2 {
 	margin: 0;
@@ -217,11 +196,7 @@ export default {
 	text-align: center;
 	background: linear-gradient(to bottom, #efefef, #ccc);
 	transition: all 0.5s ease-in-out;
-	@media (max-width: 200px) {
-	  /* Adjust form styles for smaller screens */
-	  width: 100%;
-	  padding: 50px 20px;
-	}
+	
   
 	div {
 	  font-size: 1rem;
@@ -245,17 +220,12 @@ export default {
   .sign-in {
 	left: 0;
 	z-index: 2;
-	@media (max-width: 200px) {
-	  /* Adjust sign-up and sign-in styles for smaller screens */
-	  width: 100%;
-	  left: 0;
-	}
   }
   .sign-up {
 	left: 0;
 	z-index: 1;
 	opacity: 0;
-	@media (max-width: 200px) {
+	@media (max-width: 768px) {
 	  /* Adjust sign-up and sign-in styles for smaller screens */
 	  width: 100%;
 	  left: 0;
@@ -297,6 +267,22 @@ export default {
 	  opacity: 0;
 	  z-index: 1;
 	}
+  }
+  article{
+	width: 100%;
+	align-content: center;
+  }
+  @media (max-width: 768px) {
+	article{
+	width: 100%;
+	margin: 0;
+  }
+  .container{
+	width: 100%;
+	margin: 0;
+	padding: 2px;
+	font-size: 10px;
+  }
   }
   </style>
 

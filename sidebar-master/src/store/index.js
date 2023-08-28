@@ -27,7 +27,7 @@ export default createStore({
   actions: {
     async  signUpAction({ commit }, userData) {
       try {
-        const response = await axios.post('http://192.168.11.213:3000/users/createuser', userData);
+        const response = await axios.post('http://192.168.11.213:3000/users/create-user', userData);
         // Commit any mutations based on the sign-up response if needed
       } catch (error) {
         console.error("Error during sign-up:", error);

@@ -39,7 +39,7 @@
 		  class="modal-close is-large"
 		  aria-label="close"
 		  @click="closeModal"
-		></button>
+		></button> 
 	  </div>
 	</div>
 	

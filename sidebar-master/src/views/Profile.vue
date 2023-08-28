@@ -1,5 +1,5 @@
 <template>
-    <div class="profile-container">
+    <div class="profile-container" >
       <h1 style="margin-top: 10px; text-align:center" >Welcome to your Profile</h1>
   
       <table>
