@@ -2,6 +2,7 @@
     <div class="dashboard">
       <!-- ... existing dashboard content ... -->
       <div class="message-icon" @click="toggleChatbot">
+        
         <!-- Icon or element to toggle chatbot -->
       </div>
       <div class="chatbot-container" :class="{ 'chatbot-open': chatIsOpen }">

@@ -20,8 +20,7 @@
         <button @click="setItemsPerPage(20)">20</button>
         <!-- You can add more buttons for different options -->
       </div>
-      <div class="table-container">
-        <div class="filter-bar">
+      <div class="filter-bar">
       <label>Filter by Status:</label>
       <select v-model="selectedStatus">
         <option value="all">All</option>
@@ -30,15 +29,15 @@
         <option value="pending">Pending</option>
       </select>
     </div>
+      <div class="table-container">
+        
       <table class="result-table">
         <thead>
           <tr>
             <th> First-Name</th>
             <th>Last-Name</th>
             <th>Email</th>
-            
             <th>Education</th>
-
             <th>CNIC</th>
             
             <th>Age</th>
@@ -491,11 +490,22 @@ computed: {
   100% { transform: rotate(360deg); }
 }
 @media (max-width: 768px) {
+  table{
+    width: 100%;
+    margin-right: 0;
+  }
+  th, 
+  td{
+    font-size: 2px !important;
+    padding: 2px;
+    margin: 0;
+  }
   /* Adjust font size and padding for better mobile readability */
   .result-table th,
   .result-table td {
     padding: 5px;
     font-size: 10px;
+    max-width: 100px;
   }
   .pagination button {
     padding: 3px 6px;
@@ -505,9 +515,12 @@ computed: {
   /* Adjust spacing and alignment for mobile screens */
   .content-container {
     margin: 0; /* Remove left margin on mobile screens */
+    width:100%;
   }
   .table-container {
     overflow-x: auto;
+    width: 100%;
+    padding: 10px;
   }
 
   /* Center align the table header on mobile screens */
@@ -539,6 +552,11 @@ computed: {
   .loader {
     width: 12px;
     height: 12px;
+  }
+  .result-page{
+    width: 100%;
+    padding: 6px;
+    margin: 0;
   }
 }
 </style>
