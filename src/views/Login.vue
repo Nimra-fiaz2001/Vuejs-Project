@@ -45,7 +45,7 @@ import { mapActions } from 'vuex';
 export default {
   data() {
     return {
-      signUp: false, // For toggling between Sign Up and Sign In
+      signUp: true, // For toggling between Sign Up and Sign In
       signUpName: '',
       signUpEmail: '',
       signUpPassword: '',
@@ -53,20 +53,22 @@ export default {
       signInPassword: ''
     };
   },
-  methods: {
+  methods: {	
     ...mapActions(['signUpAction', 'signInAction']),
     
-    async signUpSubmit() {
-      const userData = {
-        name: this.signUpName,
-        email: this.signUpEmail,
-        password: this.signUpPassword
-      };
-      await this.signUpAction(userData);
-      // Handle post sign-up logic, maybe navigate to another page or display a message
-    },
+	async signUpSubmit() {
+  const userData = {
+    name: this.signUpName,
+    email: this.signUpEmail,
+    password: this.signUpPassword
+  };
+  await this.signUpAction(userData);
+  
 
-    async signInSubmit() {
+  // Store user data in local storage if needed
+  localStorage.setItem('userData', JSON.stringify(this.$store.state.user));
+},
+async signInSubmit() {
   const userData = {
     email: this.signInEmail,
     password: this.signInPassword,
@@ -74,7 +76,11 @@ export default {
   await this.signInAction(userData);
 
   // Assuming signInAction sets the user as authenticated
-  this.$router.push('/profile'); // Redirect to the profile page
+  // Redirect the user to the dashboard
+  this.$router.push('/Dashboard'); // Redirect to the dashboard page
+
+  // Store user data in local storage if needed
+  localStorage.setItem('userData', JSON.stringify(this.$store.state.user));
 }
   }
 };

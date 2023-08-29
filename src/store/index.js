@@ -1,24 +1,3 @@
-// import Vue from 'vue'
-// import { createStore }  from 'vuex'
-// import VueRouter from 'vue-router'
-// import Vuex from 'vuex'
-
-// const store = createStore({
-//   state:{
-//     appName: "Vue3 Vuex"
-//   },
-
-//   getters:{
-//     appName (state) {
-//       return state.appName
-//     }
-//   }
-// })
-// export default store 
-
-// store.js
-// store/index.js
-// store/index.js
 import { createStore } from 'vuex';
 import axios from 'axios';
 
